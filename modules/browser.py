@@ -4,7 +4,6 @@ import time
 import json
 import base64
 import shutil
-from PIL import Image
 import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -24,25 +23,27 @@ def open_browser():
         print("Navigating to Google...")
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
+
         if shutil.which('chromedriver'):
-            st.write(shutil.which('chromedriver'))
             chrome_options.add_argument("--headless")
+
         driver = webdriver.Chrome(service=get_webdriver_service(), options=chrome_options)
-        # driver = webdriver.Chrome(options=chrome_options)
 
-        # Get screen size
-        screen_width = driver.execute_script("return screen.width;")
-        screen_height = driver.execute_script("return screen.height;")
+        if shutil.which('chromedriver'):
+            # Set maximize window
+            driver.maximize_window()
+        else:
+            # Get screen size
+            screen_width = driver.execute_script("return screen.width;")
+            screen_height = driver.execute_script("return screen.height;")
 
-        # Calculate window size
-        window_width = screen_width // 2
-        window_height = screen_height
+            # Calculate window size
+            window_width = screen_width // 2
+            window_height = screen_height
 
-        # Set maximize window
-        # driver.maximize_window()
-        # Set browser window position to the left half of the screen
-        driver.set_window_position(0, 0)
-        driver.set_window_size(window_width, window_height)
+            # Set browser window position to the left half of the screen
+            driver.set_window_position(0, 0)
+            driver.set_window_size(window_width, window_height)
 
         driver.get("https://www.google.com/")
         st.session_state['driver'] = driver

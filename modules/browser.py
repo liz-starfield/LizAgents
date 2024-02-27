@@ -9,7 +9,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from openai import OpenAI
-import chromedriver_binary
 
 def open_browser():
     if "driver" not in st.session_state:

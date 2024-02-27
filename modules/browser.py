@@ -222,7 +222,7 @@ def click_action(element_index):
         ActionChains(st.session_state["driver"]).move_by_offset(x, y).click().perform()
         ActionChains(st.session_state["driver"]).move_by_offset(-x, -y).perform()
         st.chat_message("assistant").write(f'clicking element {element_index}')
-        st.session_state.messages.append({"role": "assistant", "content": f'click element {element_index}'})
+        st.session_state.messages.append({"role": "assistant", "content": f'clicking element {element_index}'})
 
 def type_action(element_index, text):
     if "element_positions" in st.session_state and len(

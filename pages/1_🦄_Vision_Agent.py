@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from modules import utils
 from modules.browser import mark_page, unmark_page, open_browser, close_browser, send, toActionForResult, observe
@@ -44,11 +45,9 @@ class VisionAgent:
                 if st.button("Close Browser"):
                     close_browser()
             with col3:
-                if st.button("Mark Element"):
-                    mark_page()
+                mark_button = st.button("Mark Element")
             with col4:
-                if st.button("Unmark Element"):
-                    unmark_page()
+                unmark_button = st.button("Unmark Element")
             with col5:
                 observe_button = st.button("Observe")
             with col6:
@@ -67,16 +66,48 @@ class VisionAgent:
                 else:
                     open_browser()
 
+            if mark_button:
+                mark_page()
+                if not os.path.exists('tmp'):
+                    os.makedirs('tmp')
+                file_path = 'tmp/screenshot_mark.png'
+                driver = st.session_state['driver']
+                driver.get_screenshot_as_file(file_path)
+                st.chat_message("assistant").image(file_path)
+
+            if unmark_button:
+                unmark_page()
+                if not os.path.exists('tmp'):
+                    os.makedirs('tmp')
+                file_path = 'tmp/screenshot_unmark.png'
+                driver = st.session_state['driver']
+                driver.get_screenshot_as_file(file_path)
+                st.chat_message("assistant").image(file_path)
+
             if observe_button:
                 observe()
 
             if execute_button:
                 toActionForResult()
+                unmark_page()
+                if not os.path.exists('tmp'):
+                    os.makedirs('tmp')
+                file_path = 'tmp/screenshot_unmark.png'
+                driver = st.session_state['driver']
+                driver.get_screenshot_as_file(file_path)
+                st.chat_message("assistant").image(file_path)
 
             if observe_execute_button:
                 if "task" in st.session_state:
                     observe()
                     toActionForResult()
+                    unmark_page()
+                    if not os.path.exists('tmp'):
+                        os.makedirs('tmp')
+                    file_path = 'tmp/screenshot_unmark.png'
+                    driver = st.session_state['driver']
+                    driver.get_screenshot_as_file(file_path)
+                    st.chat_message("assistant").image(file_path)
                 else:
                     st.chat_message("assistant").write("Please start a task")
                     st.session_state.messages.append({"role": "assistant", "content": "Please start a task"})

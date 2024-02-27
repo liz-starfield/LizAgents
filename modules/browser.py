@@ -3,19 +3,32 @@ import re
 import time
 import json
 import base64
+import shutil
+from PIL import Image
 import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from openai import OpenAI
+
+def get_webdriver_service() -> Service:
+    service = Service(
+        executable_path=shutil.which('chromedriver')
+    )
+    return service
 
 def open_browser():
     if "driver" not in st.session_state:
         print("Navigating to Google...")
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
-        driver = webdriver.Chrome(options=chrome_options)
+        if shutil.which('chromedriver'):
+            st.write(shutil.which('chromedriver'))
+            chrome_options.add_argument("--headless")
+        driver = webdriver.Chrome(service=get_webdriver_service(), options=chrome_options)
+        # driver = webdriver.Chrome(options=chrome_options)
 
         # Get screen size
         screen_width = driver.execute_script("return screen.width;")
@@ -181,6 +194,7 @@ def screenshot():
         file_path = 'tmp/screenshot.png'
         driver = st.session_state['driver']
         driver.get_screenshot_as_file(file_path)
+        st.chat_message("assistant").image(file_path)
         unmark_page()
 
 def extract_json_from_markdown(md_string):
@@ -439,8 +453,8 @@ def gpt_4v_process():
                 ],
             }]
 
-        st.chat_message("assistant").write(prompt)
-        st.session_state.messages.append({"role": "assistant", "content": prompt})
+        # st.chat_message("assistant").write(prompt)
+        # st.session_state.messages.append({"role": "assistant", "content": prompt})
         request_parameters = {
             "model": "gpt-4-vision-preview",
             "messages": messages,

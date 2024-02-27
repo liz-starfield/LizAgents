@@ -55,7 +55,7 @@ class VisionAgent:
                 with col4:
                     unmark_button = st.button("Unmark Element")
                 with col5:
-                    observe_button = st.button("Observe Screen")
+                    observe_button = st.button("Observe")
                 with col6:
                     execute_button = st.button("Execute Action")
                 observe_execute_button = st.button("Observe and Execute Action")
@@ -76,24 +76,26 @@ class VisionAgent:
                     st.session_state.driver.get("https://www.google.com/")
                 else:
                     open_browser()
-                    
+
             if mark_button:
-                mark_page()
-                if not os.path.exists('tmp'):
-                    os.makedirs('tmp')
-                file_path = 'tmp/screenshot_mark.png'
-                driver = st.session_state['driver']
-                driver.get_screenshot_as_file(file_path)
-                st.chat_message("assistant").image(file_path)
+                if "driver" in st.session_state:
+                    mark_page()
+                    if not os.path.exists('tmp'):
+                        os.makedirs('tmp')
+                    file_path = 'tmp/screenshot_mark.png'
+                    driver = st.session_state['driver']
+                    driver.get_screenshot_as_file(file_path)
+                    st.chat_message("assistant").image(file_path)
 
             if unmark_button:
-                unmark_page()
-                if not os.path.exists('tmp'):
-                    os.makedirs('tmp')
-                file_path = 'tmp/screenshot_unmark.png'
-                driver = st.session_state['driver']
-                driver.get_screenshot_as_file(file_path)
-                st.chat_message("assistant").image(file_path)
+                if "driver" in st.session_state:
+                    unmark_page()
+                    if not os.path.exists('tmp'):
+                        os.makedirs('tmp')
+                    file_path = 'tmp/screenshot_unmark.png'
+                    driver = st.session_state['driver']
+                    driver.get_screenshot_as_file(file_path)
+                    st.chat_message("assistant").image(file_path)
 
             if observe_button:
                 observe()

@@ -47,13 +47,14 @@ def open_browser():
 
         driver.get("https://www.google.com/")
         st.session_state['driver'] = driver
-        print("Browser is running in the background...")
+    st.write('Browser is running.')
 
 def close_browser():
     if "driver" in st.session_state:
         driver = st.session_state['driver']
         driver.quit()
         del st.session_state['driver']
+    st.write('Browser is closed.')
 
 def unmark_page():
     if "driver" in st.session_state:
@@ -265,15 +266,14 @@ def scroll_action(direction, scroll_percentage):
 def toActionForResult():
     if "action" in st.session_state:
         action = st.session_state.action
-        data = extract_json_from_markdown(action)
-        msg = action if data is None else data['briefExplanation']
-        print(msg)
-        if "history_actions" not in st.session_state:
-            st.session_state["history_actions"] = []
-        st.session_state["history_actions"].append(msg)
-        result = False
-        if data is not None:
-            next_action = data.get("nextAction")
+        if action is not None:
+            msg = action['briefExplanation']
+            print(msg)
+            if "history_actions" not in st.session_state:
+                st.session_state["history_actions"] = []
+            st.session_state["history_actions"].append(msg)
+            result = False
+            next_action = action.get("nextAction")
             action = next_action.get("action")
             if action == "click":
                 element_index = next_action.get("element")
@@ -304,7 +304,8 @@ def toActionForResult():
 def observe() :
     if "task" in st.session_state:
         screenshot()
-        action = gpt_4v_process()
+        md = gpt_4v_process()
+        action = extract_json_from_markdown(md)
         st.session_state.action = action
         st.chat_message("assistant").write(action)
         st.session_state.messages.append({"role": "assistant", "content": action})
@@ -342,6 +343,7 @@ Observe the image, based on the 'task' and the 'history_actions', think about wh
 The image encloses the selectable elements and their numbers in red boxes.
 Select one type of action from 'nextAction_selectable_lists' for output in the 'response_format' and in a json markdown code block, please refer to 'response_examples'.
 If the current image already has results, please provide the obtained information from the image to the user.
+The language of the response should be consistent with that of the 'task'.
 -----------------------------------------------------------------------
 ## response_format
 {
